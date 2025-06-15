@@ -8,4 +8,6 @@ temp_matrix\
 *.txt
 .idea\
 .idea/
-Klausurvorbereitung/bilder/font.PNG
+*.log
+*.pyc
+*.pyo
