@@ -11,3 +11,4 @@ temp_matrix\
 *.log
 *.pyc
 *.pyo
+*.db
