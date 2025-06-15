@@ -1,0 +1,11 @@
+*.pdf
+__pycache__/
+build/
+temp_matrix/
+temp_matrix\
+*.csv
+*.zip
+*.txt
+.idea\
+.idea/
+Klausurvorbereitung/bilder/font.PNG
