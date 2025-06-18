@@ -3,7 +3,7 @@ from tkinter import simpledialog, messagebox
 from datetime import datetime
 from db import get_player_frequencies, insert_match
 
-def zeige_eingabe_fenster(root):
+def zeige_eingabe_fenster_numpad(root):
     for widget in root.winfo_children():
         if not isinstance(widget, tk.Menu):
             widget.destroy()
@@ -47,32 +47,48 @@ def zeige_eingabe_fenster(root):
         aktualisiere_button_farben()
 
     class Numpad(tk.Frame):
-        def __init__(self, master, target_var, max_length=2, **kwargs):
+        def __init__(self, master, tore_team_a_var, tore_team_b_var, **kwargs):
             super().__init__(master, **kwargs)
-            self.target_var = target_var
-            self.max_length = max_length
-            self.build_numpad()
+            self.tore_team_a = tore_team_a_var
+            self.tore_team_b = tore_team_b_var
+            self.active_team = 'A'  # Start mit Team A
+            self.build_ui()
 
-        def build_numpad(self):
+        def build_ui(self):
+            # Umschaltfeld
+            self.label = tk.Label(self, text="Aktiv: Team A", font=("Arial", 12, "bold"))
+            self.label.grid(row=0, column=0, columnspan=3, pady=5)
+
+            tk.Button(self, text="⇆ Team wechseln", command=self.toggle_team).grid(row=1, column=0, columnspan=3, pady=5)
+
+            # Zahlen-Buttons
             buttons = [
-                ('1', 0, 0), ('2', 0, 1), ('3', 0, 2),
-                ('4', 1, 0), ('5', 1, 1), ('6', 1, 2),
-                ('7', 2, 0), ('8', 2, 1), ('9', 2, 2),
-                ('C', 3, 0), ('0', 3, 1), ('←', 3, 2)
+                ('1', 2, 0), ('2', 2, 1), ('3', 2, 2),
+                ('4', 3, 0), ('5', 3, 1), ('6', 3, 2),
+                ('7', 4, 0), ('8', 4, 1), ('9', 4, 2),
+                ('C', 5, 0), ('0', 5, 1), ('←', 5, 2),
             ]
             for (text, row, col) in buttons:
-                b = tk.Button(self, text=text, width=5, height=2,
-                            command=lambda t=text: self.press(t))
-                b.grid(row=row, column=col, padx=2, pady=2)
+                tk.Button(self, text=text, width=5, height=2,
+                        command=lambda t=text: self.press(t)).grid(row=row, column=col, padx=2, pady=2)
+
+        def toggle_team(self):
+            self.active_team = 'B' if self.active_team == 'A' else 'A'
+            self.label.config(text=f"Aktiv: Team {self.active_team}")
+
+        def get_active_var(self):
+            return self.tore_team_a if self.active_team == 'A' else self.tore_team_b
 
         def press(self, key):
-            current = self.target_var.get()
+            var = self.get_active_var()
+            val = var.get()
             if key == '←':
-                self.target_var.set(current[:-1])
+                var.set(val[:-1])
             elif key == 'C':
-                self.target_var.set("")
-            elif len(current) < self.max_length and key.isdigit():
-                self.target_var.set(current + key)
+                var.set("")
+            elif key.isdigit() and len(val) < 2:
+                var.set(val + key)
+
 
 
     def versuche_speichern():
@@ -105,16 +121,15 @@ def zeige_eingabe_fenster(root):
 
     tk.Button(root, text="Neuen Spieler hinzufügen", command=neuer_spieler_popup).pack(pady=5)
 
-    tore_team_a = tk.IntVar(value=0)
-    tore_team_b = tk.IntVar(value=0)
+    tore_team_a = tk.StringVar()
+    tore_team_b = tk.StringVar()
 
-    tore_frame = tk.Frame(root)
-    tore_frame.pack(pady=10)
+    tk.Label(root, text="Tore Team A:").pack(side="left", padx=10)
+    # tk.Entry(root, textvariable=tore_team_a, font=("Arial", 16), justify="center").pack(pady=10)
 
-    tk.Label(tore_frame, text="Tore Team A").grid(row=0, column=0)
-    tk.Spinbox(tore_frame, from_=0, to=10, textvariable=tore_team_a, width=5).grid(row=0, column=1, padx=5)
+    tk.Label(root, text="Tore Team B:").pack(side="right", padx=10)
+    # tk.Entry(root, textvariable=tore_team_b, font=("Arial", 16), justify="center").pack(pady=10)
 
-    tk.Label(tore_frame, text="Tore Team B").grid(row=1, column=0)
-    tk.Spinbox(tore_frame, from_=0, to=10, textvariable=tore_team_b, width=5).grid(row=1, column=1, padx=5)
-
+    numpad = Numpad(root, tore_team_a, tore_team_b)
+    numpad.pack(pady=10)
     tk.Button(root, text="Spiel speichern", command=versuche_speichern, height=2).pack(fill="x", padx=10, pady=10)
