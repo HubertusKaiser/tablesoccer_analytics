@@ -12,3 +12,4 @@ temp_matrix\
 *.pyc
 *.pyo
 *.db
+kicker.db
