@@ -10,7 +10,7 @@ def main():
 
     root = tk.Tk()
     root.title(text_parameter.titel)
-    root.geometry("800x900")
+    # root.geometry("1700x500")
 
     menubar = tk.Menu(root)
     root.config(menu=menubar)

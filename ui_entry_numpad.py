@@ -4,6 +4,7 @@ from datetime import datetime
 from db import get_player_frequencies, insert_match
 
 def zeige_eingabe_fenster_numpad(root):
+    # Alle Widgets außer Menü löschen
     for widget in root.winfo_children():
         if not isinstance(widget, tk.Menu):
             widget.destroy()
@@ -14,8 +15,8 @@ def zeige_eingabe_fenster_numpad(root):
     def aktualisiere_button_farben():
         for name, btn in spieler_buttons.items():
             if name in selected_players:
-                index = selected_players.index(name)
-                btn.config(bg="lightgreen" if index < 2 else "lightblue")
+                idx = selected_players.index(name)
+                btn.config(bg="lightgreen" if idx < 2 else "lightblue")
             else:
                 btn.config(bg="SystemButtonFace")
 
@@ -37,13 +38,32 @@ def zeige_eingabe_fenster_numpad(root):
                 build_buttons()
 
     def build_buttons():
-        for widget in spieler_frame.winfo_children():
-            widget.destroy()
+        # Buttons neu anordnen in 3 Spalten mit festem Zellenraster
+        for w in spieler_frame.winfo_children():
+            w.destroy()
         spieler_buttons.clear()
-        for name, _ in spieler_liste:
-            b = tk.Button(spieler_frame, text=name, anchor="w", command=lambda n=name: toggle_player(n))
-            b.pack(fill="x", padx=5, pady=2)
+        num_buttons = len(spieler_liste)
+        num_rows = (num_buttons + 2) // 3
+        for idx, (name, _) in enumerate(spieler_liste):
+            row = idx // 3
+            col = idx % 3
+            b = tk.Button(
+                spieler_frame,
+                text=name,
+                anchor="w",
+                command=lambda n=name: toggle_player(n),
+                font=("Arial", 14)
+            )
+            # Einheitliche Button-Größe per cellconfigure, Schrift unabhängig
+            b.grid(row=row, column=col, padx=10, pady=5, sticky="nsew")
             spieler_buttons[name] = b
+
+        # Spalten und Zeilen flexibel machen, alle Zellen gleich groß
+        for c in range(3):
+            spieler_frame.columnconfigure(c, weight=1, uniform="players")
+        for r in range(num_rows):
+            spieler_frame.rowconfigure(r, weight=1, uniform="players")
+
         aktualisiere_button_farben()
 
     class Numpad(tk.Frame):
@@ -51,26 +71,30 @@ def zeige_eingabe_fenster_numpad(root):
             super().__init__(master, **kwargs)
             self.tore_team_a = tore_team_a_var
             self.tore_team_b = tore_team_b_var
-            self.active_team = 'A'  # Start mit Team A
+            self.active_team = 'A'
             self.build_ui()
 
         def build_ui(self):
-            # Umschaltfeld
+            for i in range(3):
+                self.columnconfigure(i, weight=1)
+            for j in range(6):
+                self.rowconfigure(j, weight=1)
+
             self.label = tk.Label(self, text="Aktiv: Team A", font=("Arial", 12, "bold"))
-            self.label.grid(row=0, column=0, columnspan=3, pady=5)
+            self.label.grid(row=0, column=0, columnspan=3, pady=5, sticky="ew")
 
-            tk.Button(self, text="⇆ Team wechseln", command=self.toggle_team).grid(row=1, column=0, columnspan=3, pady=5)
+            self.switch_button = tk.Button(self, text="⇆ Team wechseln", command=self.toggle_team)
+            self.switch_button.grid(row=1, column=0, columnspan=3, pady=5, sticky="ew")
 
-            # Zahlen-Buttons
             buttons = [
                 ('1', 2, 0), ('2', 2, 1), ('3', 2, 2),
                 ('4', 3, 0), ('5', 3, 1), ('6', 3, 2),
                 ('7', 4, 0), ('8', 4, 1), ('9', 4, 2),
-                ('C', 5, 0), ('0', 5, 1), ('←', 5, 2),
+                ('10', 5, 0), ('0', 5, 1), ('←', 5, 2),
             ]
-            for (text, row, col) in buttons:
-                tk.Button(self, text=text, width=5, height=2,
-                        command=lambda t=text: self.press(t)).grid(row=row, column=col, padx=2, pady=2)
+            for (text, r, c) in buttons:
+                btn = tk.Button(self, text=text, command=lambda t=text: self.press(t), font=("Arial", 12))
+                btn.grid(row=r, column=c, padx=2, pady=2, sticky="nsew")
 
         def toggle_team(self):
             self.active_team = 'B' if self.active_team == 'A' else 'A'
@@ -84,52 +108,50 @@ def zeige_eingabe_fenster_numpad(root):
             val = var.get()
             if key == '←':
                 var.set(val[:-1])
-            elif key == 'C':
-                var.set("")
-            elif key.isdigit() and len(val) < 2:
+            else:
                 var.set(val + key)
-
-
+                self.toggle_team()
+                self.switch_button.grid_remove()
 
     def versuche_speichern():
         if len(selected_players) != 4:
             messagebox.showerror("Fehler", "Bitte genau 4 Spieler auswählen.")
             return
-
         a1, a2, b1, b2 = selected_players
-        ta = tore_team_a.get()
-        tb = tore_team_b.get()
-
+        ta = int(tore_team_a.get() or 0)
+        tb = int(tore_team_b.get() or 0)
         if ta == tb:
             messagebox.showerror("Fehler", "Unentschieden ist nicht erlaubt.")
             return
-
         gewinner = "Team A" if ta > tb else "Team B"
         datum = datetime.now().strftime("%Y-%m-%d %H:%M")
-
         insert_match(a1, a2, b1, b2, ta, tb, gewinner, datum)
-
         messagebox.showinfo("Erfolg", "Spiel gespeichert!")
         selected_players.clear()
         aktualisiere_button_farben()
 
+    # Setup UI
     spieler_liste = get_player_frequencies()
-
     spieler_frame = tk.Frame(root)
     spieler_frame.pack(fill="both", expand=True, padx=10, pady=5)
     build_buttons()
 
-    tk.Button(root, text="Neuen Spieler hinzufügen", command=neuer_spieler_popup).pack(pady=5)
+    action_frame = tk.Frame(root)
+    action_frame.pack(fill="x", padx=10, pady=5)
+    tk.Button(action_frame, text="Neuen Spieler hinzufügen", command=neuer_spieler_popup).pack(side="left")
 
     tore_team_a = tk.StringVar()
     tore_team_b = tk.StringVar()
-
-    tk.Label(root, text="Tore Team A:").pack(side="left", padx=10)
-    # tk.Entry(root, textvariable=tore_team_a, font=("Arial", 16), justify="center").pack(pady=10)
-
-    tk.Label(root, text="Tore Team B:").pack(side="right", padx=10)
-    # tk.Entry(root, textvariable=tore_team_b, font=("Arial", 16), justify="center").pack(pady=10)
+    input_frame = tk.Frame(root)
+    input_frame.pack(fill="x", padx=10, pady=5)
+    for c in range(4):
+        input_frame.columnconfigure(c, weight=1)
+    tk.Label(input_frame, text="Tore Team A:").grid(row=0, column=0, sticky="e")
+    tk.Entry(input_frame, textvariable=tore_team_a, font=("Arial", 16), justify="center").grid(row=0, column=1, sticky="ew")
+    tk.Label(input_frame, text="Tore Team B:").grid(row=0, column=2, sticky="e")
+    tk.Entry(input_frame, textvariable=tore_team_b, font=("Arial", 16), justify="center").grid(row=0, column=3, sticky="ew")
 
     numpad = Numpad(root, tore_team_a, tore_team_b)
-    numpad.pack(pady=10)
+    numpad.pack(fill="both", expand=True, padx=10, pady=5)
+
     tk.Button(root, text="Spiel speichern", command=versuche_speichern, height=2).pack(fill="x", padx=10, pady=10)
