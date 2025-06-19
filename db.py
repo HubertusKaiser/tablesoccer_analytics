@@ -59,3 +59,34 @@ def get_player_frequencies():
                 counts[name] = counts.get(name, 0) + 1
     conn.close()
     return sorted(counts.items(), key=lambda x: x[1], reverse=True)
+
+def get_last_match():
+    conn = sqlite3.connect(DB_DATEI)  
+    c = conn.cursor()
+    c.execute(f"""
+        SELECT team_a_spieler1,
+               team_a_spieler2, 
+               team_b_spieler1, 
+               team_b_spieler2, 
+               tore_team_a,
+               tore_team_b, 
+               datum 
+        FROM {TABELLE} ORDER BY rowid DESC LIMIT 1
+    """)
+    row = c.fetchone()
+    conn.close()
+    if row:
+        return {
+            'team_a1': row[0], 'team_a2': row[1],
+            'team_b1': row[2], 'team_b2': row[3],
+            'tore_a': row[4], 'tore_b': row[5],
+            'datum': row[6]
+        }
+    return None
+
+def delete_last_match():
+    conn = sqlite3.connect(DB_DATEI)
+    c = conn.cursor()
+    c.execute(f"""DELETE FROM {TABELLE} WHERE rowid = (SELECT MAX(rowid) FROM {TABELLE})""")
+    conn.commit()
+    conn.close()

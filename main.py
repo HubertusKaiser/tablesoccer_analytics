@@ -1,7 +1,6 @@
 import tkinter as tk
 from config import text_parameter
 from db import init_db
-from ui_entry import zeige_eingabe_fenster
 from ui_history import zeige_letzte_spiele
 from ui_entry_numpad import zeige_eingabe_fenster_numpad
 
@@ -10,7 +9,7 @@ def main():
 
     root = tk.Tk()
     root.title(text_parameter.titel)
-    # root.geometry("1700x500")
+    # root.geometry("1700x500") # may be set later if needed
 
     menubar = tk.Menu(root)
     root.config(menu=menubar)

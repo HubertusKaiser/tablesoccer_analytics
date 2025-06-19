@@ -146,9 +146,9 @@ def zeige_eingabe_fenster_numpad(root):
     input_frame.pack(fill="x", padx=10, pady=5)
     for c in range(4):
         input_frame.columnconfigure(c, weight=1)
-    tk.Label(input_frame, text="Tore Team A:").grid(row=0, column=0, sticky="e")
+    tk.Label(input_frame, text="Tore Team A:", bg="lightgreen").grid(row=0, column=0, sticky="e")
     tk.Entry(input_frame, textvariable=tore_team_a, font=("Arial", 16), justify="center").grid(row=0, column=1, sticky="ew")
-    tk.Label(input_frame, text="Tore Team B:").grid(row=0, column=2, sticky="e")
+    tk.Label(input_frame, text="Tore Team B:", bg="lightblue").grid(row=0, column=2, sticky="e")
     tk.Entry(input_frame, textvariable=tore_team_b, font=("Arial", 16), justify="center").grid(row=0, column=3, sticky="ew")
 
     numpad = Numpad(root, tore_team_a, tore_team_b)
