@@ -1,26 +1,71 @@
-import tkinter as tk
+from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.metrics import dp
+from kivy.properties import StringProperty, ListProperty
+from kivy.clock import Clock
+from datetime import datetime
+from db import init_db, fetch_last_matches, delete_last_match, get_last_match
 from config import text_parameter
-from db import init_db
-from ui_history import zeige_letzte_spiele
-from ui_entry_numpad import zeige_eingabe_fenster_numpad
 
-def main():
-    init_db()
+class MainMenu(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(10))
+        
+        title = Label(
+            text=text_parameter.titel,
+            font_size='24sp',
+            size_hint_y=0.2
+        )
+        
+        btn_entry = Button(
+            text='Ergebnisse eintragen',
+            size_hint_y=0.4,
+            on_press=self.switch_to_entry
+        )
+        
+        btn_history = Button(
+            text='Letzte Spiele',
+            size_hint_y=0.4,
+            on_press=self.switch_to_history
+        )
+        
+        layout.add_widget(title)
+        layout.add_widget(btn_entry)
+        layout.add_widget(btn_history)
+        self.add_widget(layout)
+    
+    def switch_to_entry(self, instance):
+        self.manager.current = 'entry'
+    
+    def switch_to_history(self, instance):
+        self.manager.get_screen('history').load_matches()
+        self.manager.current = 'history'
 
-    root = tk.Tk()
-    root.title(text_parameter.titel)
-    # root.geometry("1700x500") # may be set later if needed
+class KickerApp(App):
+    def build(self):
+        # Initialize database
+        init_db()
+        
+        # Create screen manager
+        sm = ScreenManager()
+        
+        # Add screens
+        sm.add_widget(MainMenu(name='menu'))
+        sm.add_widget(EntryScreen(name='entry'))
+        sm.add_widget(HistoryScreen(name='history'))
+        
+        return sm
 
-    menubar = tk.Menu(root)
-    root.config(menu=menubar)
-
-    menu = tk.Menu(menubar, tearoff=0)
-    menubar.add_cascade(label="Menü", menu=menu)
-    menu.add_command(label="Ergebnisse eintragen", command=lambda: zeige_eingabe_fenster_numpad(root))
-    menu.add_command(label="Letzte Spiele", command=lambda: zeige_letzte_spiele(root))
-
-    zeige_eingabe_fenster_numpad(root)
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    from entry_screen import EntryScreen
+    from history_screen import HistoryScreen
+    KickerApp().run()
+else:
+    # For kivy_ui.py backward compatibility
+    from entry_screen import EntryScreen as KickerApp
+    from history_screen import HistoryScreen
