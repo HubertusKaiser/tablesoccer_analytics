@@ -20,6 +20,9 @@ class PlayerButton(Button):
         self.text = name
         self.background_normal = ''
         self.background_color = (0.9, 0.9, 0.9, 1)  # Default color
+        self.color = (0.1, 0.1, 0.1, 1)  # Dark text for better contrast
+        self.font_size = '20sp'
+        self.padding = (dp(10), dp(10))  # Add padding
         self.bind(on_press=self.on_button_press)
     
     def on_button_press(self, instance):
@@ -128,12 +131,66 @@ class EntryScreen(Screen):
         )
         
         # Score display
-        score_layout = BoxLayout(orientation='horizontal', size_hint_y=0.1, padding=dp(5))
-        score_layout.add_widget(Label(text="Tore Team A:", size_hint_x=0.3))
-        self.score_a = Label(text=self.tore_team_a, font_size='24sp', size_hint_x=0.2)
+        score_layout = BoxLayout(orientation='horizontal', size_hint_y=0.1, padding=dp(5), spacing=dp(5))
+        
+        # Team A
+        team_a_label = Button(
+            text="Tore Team A:",
+            size_hint_x=0.3,
+            background_color=(0.3, 0.8, 0.3, 1),  # Team A green
+            color=(1, 1, 1, 1),  # White text
+            bold=True,
+            disabled=True,
+            disabled_color=(1, 1, 1, 1),  # Keep text white when disabled
+            background_disabled_normal='',
+            background_disabled_down='',
+            border=(0, 0, 0, 0)  # Remove border
+        )
+        
+        self.score_a = Button(
+            text=self.tore_team_a,
+            font_size='24sp',
+            size_hint_x=0.2,
+            background_color=(0.2, 0.2, 0.2, 1),  # Dark gray background
+            color=(1, 1, 1, 1),  # White text
+            disabled=False,  # Make it enabled to show text properly
+            background_normal='',
+            background_down='',
+            border=(2, 2, 2, 2),  # Add subtle border
+            disabled_color=(1, 1, 1, 1)  # Ensure text stays white
+        )
+        
+        # Team B
+        team_b_label = Button(
+            text="Tore Team B:",
+            size_hint_x=0.3,
+            background_color=(0.2, 0.5, 0.8, 1),  # Team B blue
+            color=(1, 1, 1, 1),  # White text
+            bold=True,
+            disabled=True,
+            disabled_color=(1, 1, 1, 1),  # Keep text white when disabled
+            background_disabled_normal='',
+            background_disabled_down='',
+            border=(0, 0, 0, 0)  # Remove border
+        )
+        
+        self.score_b = Button(
+            text=self.tore_team_b,
+            font_size='24sp',
+            size_hint_x=0.2,
+            background_color=(0.2, 0.2, 0.2, 1),  # Dark gray background
+            color=(1, 1, 1, 1),  # White text
+            disabled=False,  # Make it enabled to show text properly
+            background_normal='',
+            background_down='',
+            border=(2, 2, 2, 2),  # Add subtle border
+            disabled_color=(1, 1, 1, 1)  # Ensure text stays white
+        )
+        
+        # Add all score widgets to layout
+        score_layout.add_widget(team_a_label)
         score_layout.add_widget(self.score_a)
-        score_layout.add_widget(Label(text="Tore Team B:", size_hint_x=0.3))
-        self.score_b = Label(text=self.tore_team_b, font_size='24sp', size_hint_x=0.2)
+        score_layout.add_widget(team_b_label)
         score_layout.add_widget(self.score_b)
         
         # Numpad
@@ -183,9 +240,13 @@ class EntryScreen(Screen):
         for name, btn in self.player_buttons.items():
             if name in self.selected_players:
                 idx = self.selected_players.index(name)
-                btn.background_color = (0.56, 0.93, 0.56, 1) if idx < 2 else (0.68, 0.85, 0.9, 1)  # lightgreen/lightblue
+                # Team A (first 2 players) - Light green
+                # Team B (last 2 players) - Darker blue to match 'Tore Team B' label
+                btn.background_color = (0.3, 0.8, 0.3, 1) if idx < 2 else (0.2, 0.5, 0.8, 1)
+                btn.color = (1, 1, 1, 1)  # White text for better contrast
             else:
                 btn.background_color = (0.9, 0.9, 0.9, 1)  # Default color
+                btn.color = (0.1, 0.1, 0.1, 1)  # Dark text on light background
     
     def show_add_player_popup(self, instance):
         content = BoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10))
@@ -276,6 +337,9 @@ class EntryScreen(Screen):
         content.add_widget(ok_btn)
         
         popup.open()
+    
+    def on_tore_team_a(self, instance, value):
+        self.score_a.text = value
     
     def on_tore_team_a(self, instance, value):
         self.score_a.text = value
