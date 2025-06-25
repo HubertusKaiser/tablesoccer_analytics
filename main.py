@@ -65,6 +65,46 @@ class SettingsScreen(Screen):
         
         self.add_widget(layout)
     
+    def show_confirm_delete_dialog(self, player_name):
+        """Show confirmation dialog for deleting a player's games"""
+        content = BoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10))
+        content.add_widget(Label(
+            text=f"Alle Spiele von {player_name} wirklich löschen?",
+            font_size='20sp'
+        ))
+        
+        btn_layout = BoxLayout(spacing=dp(5))
+        
+        def delete_games(instance):
+            from db import delete_player_games
+            try:
+                delete_player_games(player_name)
+                popup.dismiss()
+                self.show_message("Erfolg", f"Alle Spiele von {player_name} wurden gelöscht.")
+            except Exception as e:
+                self.show_message("Fehler", f"Fehler beim Löschen: {str(e)}")
+        
+        btn_yes = Button(
+            text='Ja, löschen',
+            background_color=(0.8, 0.2, 0.2, 1),
+            on_press=delete_games
+        )
+        btn_no = Button(
+            text='Abbrechen',
+            on_press=lambda x: popup.dismiss()
+        )
+        
+        btn_layout.add_widget(btn_yes)
+        btn_layout.add_widget(btn_no)
+        content.add_widget(btn_layout)
+        
+        popup = Popup(
+            title='Bestätigung',
+            content=content,
+            size_hint=(0.8, 0.4)
+        )
+        popup.open()
+    
     def confirm_delete_player_games(self, instance):
         from db import get_all_players
         
@@ -85,7 +125,7 @@ class SettingsScreen(Screen):
                 text=player,
                 size_hint_y=None,
                 height=dp(40),
-                on_press=lambda x, p=player: self.confirm_delete_player_games_final(p)
+                on_press=lambda x, p=player: self.show_confirm_delete_dialog(p)
             )
             player_buttons.add_widget(btn)
             
