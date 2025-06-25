@@ -20,13 +20,14 @@ class HistoryScreen(Screen):
         back_btn = Button(
             text='← Zurück',
             size_hint_y=0.1,
+            font_size='20sp',
             on_press=self.go_back
         )
         
         # Title
         title = Label(
             text="Letzte Spiele",
-            font_size='24sp',
+            font_size='30sp',
             size_hint_y=0.1,
             halign='center'
         )
@@ -46,6 +47,7 @@ class HistoryScreen(Screen):
         delete_btn = Button(
             text="Letztes Spiel löschen",
             size_hint_y=0.1,
+            font_size='20sp',
             background_color=(0.9, 0.3, 0.3, 1),
             on_press=self.confirm_delete_last_match
         )
@@ -67,7 +69,7 @@ class HistoryScreen(Screen):
         if not matches:
             self.matches_layout.add_widget(Label(
                 text="Keine Spiele gefunden.",
-                font_size='16sp',
+                font_size='20sp',
                 size_hint_y=None,
                 height=dp(50)
             ))
@@ -84,7 +86,7 @@ class HistoryScreen(Screen):
             
             label = Label(
                 text=text,
-                font_size='16sp',
+                font_size='20sp',
                 size_hint_y=None,
                 height=dp(50),
                 halign='left',

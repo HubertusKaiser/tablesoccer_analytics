@@ -21,7 +21,7 @@ class PlayerButton(Button):
         self.background_normal = ''
         self.background_color = (0.9, 0.9, 0.9, 1)  # Default color
         self.color = (0.1, 0.1, 0.1, 1)  # Dark text for better contrast
-        self.font_size = '20sp'
+        self.font_size = '24sp'  # Increased from 20sp
         self.padding = (dp(10), dp(10))  # Add padding
         self.bind(on_press=self.on_button_press)
     
@@ -43,7 +43,7 @@ class Numpad(GridLayout):
         # Team indicator and switch
         self.team_label = Label(
             text="Aktiv: Team A",
-            font_size='16sp',
+            font_size='24sp',  # Increased from 16sp
             size_hint_y=0.2
         )
         self.add_widget(self.team_label)
@@ -51,6 +51,7 @@ class Numpad(GridLayout):
         switch_btn = Button(
             text="⇆ Team wechseln",
             size_hint_y=0.2,
+            font_size='24sp',  # Added font size
             on_press=self.toggle_team
         )
         self.add_widget(switch_btn)
@@ -66,6 +67,7 @@ class Numpad(GridLayout):
         for btn in buttons:
             button = Button(
                 text=btn,
+                font_size='24sp',  # Added font size
                 on_press=self.on_button_press
             )
             self.add_widget(button)
@@ -116,6 +118,7 @@ class EntryScreen(Screen):
         back_btn = Button(
             text='← Zurück',
             size_hint_y=0.1,
+            font_size='24sp',  # Added font size
             on_press=self.go_back
         )
         
@@ -127,6 +130,7 @@ class EntryScreen(Screen):
         add_player_btn = Button(
             text="Neuen Spieler hinzufügen",
             size_hint_y=0.1,
+            font_size='24sp',  # Added font size
             on_press=self.show_add_player_popup
         )
         
@@ -136,6 +140,7 @@ class EntryScreen(Screen):
         # Team A
         team_a_label = Button(
             text="Tore Team A:",
+            font_size='24sp',  # Added font size
             size_hint_x=0.3,
             background_color=(0.3, 0.8, 0.3, 1),  # Team A green
             color=(1, 1, 1, 1),  # White text
@@ -149,7 +154,7 @@ class EntryScreen(Screen):
         
         self.score_a = Button(
             text=self.tore_team_a,
-            font_size='24sp',
+            font_size='32sp',  # Increased from 24sp
             size_hint_x=0.2,
             background_color=(0.2, 0.2, 0.2, 1),  # Dark gray background
             color=(1, 1, 1, 1),  # White text
@@ -163,6 +168,7 @@ class EntryScreen(Screen):
         # Team B
         team_b_label = Button(
             text="Tore Team B:",
+            font_size='24sp',  # Added font size
             size_hint_x=0.3,
             background_color=(0.2, 0.5, 0.8, 1),  # Team B blue
             color=(1, 1, 1, 1),  # White text
@@ -176,7 +182,7 @@ class EntryScreen(Screen):
         
         self.score_b = Button(
             text=self.tore_team_b,
-            font_size='24sp',
+            font_size='32sp',  # Increased from 24sp
             size_hint_x=0.2,
             background_color=(0.2, 0.2, 0.2, 1),  # Dark gray background
             color=(1, 1, 1, 1),  # White text

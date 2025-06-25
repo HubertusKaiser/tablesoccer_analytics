@@ -18,21 +18,14 @@ class SettingsScreen(Screen):
         
         title = Label(
             text='Einstellungen und Setup',
-            font_size='24sp',
+            font_size='30sp',
             size_hint_y=0.2
         )
         
-        btn_delete_player_games = Button(
-            text='Alle Spiele eines Spielers löschen',
-            size_hint_y=0.4,
-            on_press=self.confirm_delete_player_games
-        )
-        
-        btn_back = Button(
-            text='← Zurück',
-            size_hint_y=0.1,
-            on_press=self.go_back
-        )
+        layout.add_widget(title)
+        layout.add_widget(btn_delete_player_games)
+        layout.add_widget(btn_rename_player)
+        layout.add_widget(btn_back)
         
         layout.add_widget(title)
         layout.add_widget(btn_delete_player_games)
@@ -77,38 +70,95 @@ class SettingsScreen(Screen):
         )
         popup.open()
 
-    def confirm_delete_player_games_final(self, player):
+    def show_rename_player_popup(self, instance):
         content = BoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10))
         
-        message = (
-            f"Sind Sie sicher, dass Sie alle Spiele von {player} löschen möchten?\n"
-            "Diese Aktion kann nicht rückgängig gemacht werden."
-        )
+        # Get all players
+        from db import get_all_players
+        players = get_all_players()
+        if not players:
+            self.show_message("Keine Spieler", "Keine Spieler im System gefunden.")
+            return
+            
+        # Create buttons for each player
+        player_buttons = GridLayout(cols=2, spacing=dp(5), size_hint_y=None)
+        player_buttons.bind(minimum_height=player_buttons.setter('height'))
         
-        content.add_widget(Label(text=message))
-        
-        btn_layout = BoxLayout(spacing=dp(5))
-        btn_yes = Button(text='Ja, löschen')
-        btn_no = Button(text='Abbrechen')
+        for player in players:
+            btn = Button(
+                text=player,
+                size_hint_y=None,
+                height=dp(40),
+                on_press=lambda x, p=player: self.show_rename_input_popup(p)
+            )
+            player_buttons.add_widget(btn)
+            
+        content.add_widget(Label(
+            text="Wähle einen Spieler zum Umbenennen:",
+            size_hint_y=None,
+            height=dp(40),
+            font_size='20sp'
+        ))
+        content.add_widget(player_buttons)
         
         popup = Popup(
-            title='Bestätigung',
+            title='Spieler auswählen',
+            content=content,
+            size_hint=(0.9, 0.8)
+        )
+        popup.open()
+
+    def show_rename_input_popup(self, old_name):
+        content = BoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10))
+        
+        # Label and input field
+        content.add_widget(Label(
+            text=f"Neuer Name für {old_name}:",
+            font_size='20sp'
+        ))
+        
+        name_input = TextInput(
+            multiline=False,
+            font_size='20sp'
+        )
+        content.add_widget(name_input)
+        
+        # Buttons
+        btn_layout = BoxLayout(spacing=dp(5))
+        btn_rename = Button(
+            text='Umbenennen',
+            font_size='20sp'
+        )
+        btn_cancel = Button(
+            text='Abbrechen',
+            font_size='20sp'
+        )
+        
+        popup = Popup(
+            title='Spieler umbenennen',
             content=content,
             size_hint=(0.9, 0.5)
         )
         
-        def delete_and_close(instance):
-            from db import delete_player_games
-            delete_player_games(player)
-            popup.dismiss()
-            self.manager.get_screen('history').load_matches()
-            self.show_message("Gelöscht", f"Alle Spiele von {player} wurden gelöscht.")
+        def rename_and_close(instance):
+            new_name = name_input.text.strip()
+            if not new_name:
+                self.show_message("Fehler", "Bitte gib einen neuen Namen ein.")
+                return
+                
+            from db import rename_player
+            try:
+                rename_player(old_name, new_name)
+                popup.dismiss()
+                self.show_message("Erfolgreich", "Spieler wurde erfolgreich umbenannt.")
+            except Exception as e:
+                self.show_message("Fehler", f"Fehler beim Umbenennen: {str(e)}")
         
-        btn_yes.bind(on_press=delete_and_close)
-        btn_no.bind(on_press=popup.dismiss)
+        btn_rename.bind(on_press=rename_and_close)
+        btn_cancel.bind(on_press=popup.dismiss)
         
-        btn_layout.add_widget(btn_yes)
-        btn_layout.add_widget(btn_no)
+        btn_layout.add_widget(btn_rename)
+        btn_layout.add_widget(btn_cancel)
         content.add_widget(btn_layout)
         
         popup.content = content
@@ -140,25 +190,28 @@ class MainMenu(Screen):
         
         title = Label(
             text=text_parameter.titel,
-            font_size='24sp',
+            font_size='36sp',
             size_hint_y=0.2
         )
         
         btn_entry = Button(
             text='Ergebnisse eintragen',
             size_hint_y=0.4,
+            font_size='24sp',
             on_press=self.switch_to_entry
         )
         
         btn_history = Button(
             text='Letzte Spiele',
             size_hint_y=0.4,
+            font_size='24sp',
             on_press=self.switch_to_history
         )
         
         btn_settings = Button(
             text='Einstellungen und Setup',
             size_hint_y=0.4,
+            font_size='24sp',
             on_press=self.switch_to_settings
         )
         

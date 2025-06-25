@@ -128,3 +128,33 @@ def delete_player_games(player):
     
     conn.commit()
     conn.close()
+
+
+def rename_player(old_name, new_name):
+    """Rename all occurrences of a player's name in the database"""
+    if not old_name or not new_name:
+        raise ValueError("Both old and new names must be provided")
+    
+    conn = sqlite3.connect(DB_DATEI)
+    c = conn.cursor()
+    
+    # Update all occurrences of the old name to the new name
+    c.execute(f"""
+        UPDATE {TABELLE}
+        SET team_a_spieler1 = CASE WHEN team_a_spieler1 = ? THEN ? ELSE team_a_spieler1 END,
+            team_a_spieler2 = CASE WHEN team_a_spieler2 = ? THEN ? ELSE team_a_spieler2 END,
+            team_b_spieler1 = CASE WHEN team_b_spieler1 = ? THEN ? ELSE team_b_spieler1 END,
+            team_b_spieler2 = CASE WHEN team_b_spieler2 = ? THEN ? ELSE team_b_spieler2 END
+        WHERE team_a_spieler1 = ? OR team_a_spieler2 = ? 
+           OR team_b_spieler1 = ? OR team_b_spieler2 = ?
+    """, (
+        old_name, new_name,
+        old_name, new_name,
+        old_name, new_name,
+        old_name, new_name,
+        old_name, old_name,
+        old_name, old_name
+    ))
+    
+    conn.commit()
+    conn.close()
