@@ -1,6 +1,8 @@
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -14,22 +16,53 @@ from config import text_parameter
 class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
+        # Create main layout
         layout = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(10))
         
+        # Create title layout
+        title_layout = BoxLayout(orientation='vertical', size_hint_y=0.2)
         title = Label(
             text='Einstellungen und Setup',
-            font_size='30sp',
-            size_hint_y=0.2
+            font_size='30sp'
+        )
+        title_layout.add_widget(title)
+        
+        # Create buttons layout
+        buttons_layout = BoxLayout(orientation='vertical', spacing=dp(10))
+        
+        # Delete player games button
+        btn_delete_player_games = Button(
+            text='Alle Spiele eines Spielers löschen',
+            size_hint_y=0.4,
+            font_size='20sp',
+            on_press=self.confirm_delete_player_games
         )
         
-        layout.add_widget(title)
-        layout.add_widget(btn_delete_player_games)
-        layout.add_widget(btn_rename_player)
-        layout.add_widget(btn_back)
+        # Rename player button
+        btn_rename_player = Button(
+            text='Spieler umbenennen',
+            size_hint_y=0.4,
+            font_size='20sp',
+            on_press=self.show_rename_player_popup
+        )
         
-        layout.add_widget(title)
-        layout.add_widget(btn_delete_player_games)
-        layout.add_widget(btn_back)
+        # Back button
+        btn_back = Button(
+            text='← Zurück',
+            size_hint_y=0.1,
+            font_size='20sp',
+            on_press=self.go_back
+        )
+        
+        buttons_layout.add_widget(btn_delete_player_games)
+        buttons_layout.add_widget(btn_rename_player)
+        buttons_layout.add_widget(btn_back)
+        
+        # Add layouts to main layout
+        layout.add_widget(title_layout)
+        layout.add_widget(buttons_layout)
+        
         self.add_widget(layout)
     
     def confirm_delete_player_games(self, instance):
