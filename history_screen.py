@@ -139,6 +139,8 @@ class HistoryScreen(Screen):
         popup.content = content
         popup.open()
     
+
+
     def go_back(self, instance):
         self.manager.current = 'menu'
     

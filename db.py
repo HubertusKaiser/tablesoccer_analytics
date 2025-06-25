@@ -90,3 +90,41 @@ def delete_last_match():
     c.execute(f"""DELETE FROM {TABELLE} WHERE rowid = (SELECT MAX(rowid) FROM {TABELLE})""")
     conn.commit()
     conn.close()
+
+
+def get_all_players():
+    """Get all unique players from the database"""
+    conn = sqlite3.connect(DB_DATEI)
+    c = conn.cursor()
+    
+    # Get all player names from all columns where players can appear
+    c.execute(f"""
+        SELECT DISTINCT team_a_spieler1, team_a_spieler2, team_b_spieler1, team_b_spieler2 
+        FROM {TABELLE}
+    """)
+    
+    # Get all unique player names
+    players = set()
+    for row in c.fetchall():
+        for player in row:
+            if player:
+                players.add(player)
+    
+    conn.close()
+    return sorted(players)  # Return sorted list of players
+
+
+def delete_player_games(player):
+    """Delete all games where the specified player appears"""
+    conn = sqlite3.connect(DB_DATEI)
+    c = conn.cursor()
+    
+    # Delete games where player appears in any of the player columns
+    c.execute(f"""
+        DELETE FROM {TABELLE}
+        WHERE team_a_spieler1 = ? OR team_a_spieler2 = ? 
+           OR team_b_spieler1 = ? OR team_b_spieler2 = ?
+    """, (player, player, player, player))
+    
+    conn.commit()
+    conn.close()
