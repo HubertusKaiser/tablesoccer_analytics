@@ -321,9 +321,39 @@ class KickerApp(App):
         return sm
 
 if __name__ == '__main__':
-    from entry_screen import EntryScreen
-    from history_screen import HistoryScreen
-    KickerApp().run()
+    try:
+        # Initialize database
+        from db import init_db
+        init_db()
+        
+        from entry_screen import EntryScreen
+        from history_screen import HistoryScreen
+        
+        # Run the app
+        KickerApp().run()
+        
+    except Exception as e:
+        import sys
+        import traceback
+        # Print error to stderr
+        print(f"Fatal error: {str(e)}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        
+        # On Android, show a message to the user
+        if platform == 'android':
+            from kivy.app import App
+            from kivy.uix.popup import Popup
+            from kivy.uix.label import Label
+            
+            class ErrorApp(App):
+                def build(self):
+                    popup = Popup(title='App Error',
+                                content=Label(text=f'An error occurred: {str(e)}'),
+                                size_hint=(0.8, 0.4))
+                    popup.open()
+                    return popup
+            
+            ErrorApp().run()
 else:
     # For kivy_ui.py backward compatibility
     from entry_screen import EntryScreen as KickerApp
