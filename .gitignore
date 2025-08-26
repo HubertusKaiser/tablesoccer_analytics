@@ -1,4 +1,5 @@
 *.pdf
+.buildozer/
 __pycache__/
 build/
 temp_matrix/
@@ -13,3 +14,5 @@ temp_matrix\
 *.pyo
 *.db
 kicker.db
+*.apk
+*.png

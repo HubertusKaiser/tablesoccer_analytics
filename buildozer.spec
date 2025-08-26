@@ -12,6 +12,12 @@ package.domain = org.test
 # (str) Source code where the main.py live
 source.dir = .
 
+# (str) The main file to run when the app starts
+source.include_patterns = simple_test.py
+
+# (str) The main entry point
+android.entrypoint = org.kivy.android.PythonActivity
+
 # (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,kv,atlas,db,json,txt
 
@@ -43,10 +49,10 @@ requirements = python3==3.9.16,kivy==2.2.1,kivymd==1.1.1,plyer,sqlite3,android,p
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/assets/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/assets/icon.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
@@ -94,7 +100,7 @@ fullscreen = 0
 
 # (list) Permissions
 # (See https://python-for-android.readthedocs.io/en/latest/buildoptions/#build-options-1 for all the supported syntaxes and properties)
-android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, WAKE_LOCK, ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
@@ -109,7 +115,7 @@ android.minapi = 21
 #android.sdk = 20
 
 # (str) Android NDK version to use
-android.ndk =  r26b
+android.ndk =  25b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 #android.ndk_api = 21
@@ -118,10 +124,10 @@ android.ndk =  r26b
 #android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-#android.ndk_path =
+android.ndk_path = /home/hubertus/.buildozer/android/platform/android-ndk-r25b
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-#android.sdk_path =
+android.sdk_path = /home/hubertus/.buildozer/android/platform/android-sdk
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 #android.ant_path =
@@ -197,33 +203,6 @@ android.ndk =  r26b
 # 3) A directory, here 'legal_resources' must contain one or more directories, 
 # each of a resource kind:  drawable, xml, etc...
 # android.add_resources = legal_resources
-#android.add_resources =
-
-# (list) Gradle dependencies to add
-#android.gradle_dependencies =
-
-# (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
-# contains an 'androidx' package, or any package from Kotlin source.
-# android.enable_androidx requires android.api >= 28
-#android.enable_androidx = True
-
-# (list) add java compile options
-# this can for example be necessary when importing certain java libraries using the 'android.gradle_dependencies' option
-# see https://developer.android.com/studio/write/java8-support for further information
-# android.add_compile_options = "sourceCompatibility = 1.8", "targetCompatibility = 1.8"
-
-# (list) Gradle repositories to add {can be necessary for some android.gradle_dependencies}
-# please enclose in double quotes 
-# e.g. android.gradle_repositories = "maven { url 'https://kotlin.bintray.com/ktor' }"
-#android.add_gradle_repositories =
-
-# (list) packaging options to add 
-# see https://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.PackagingOptions.html
-# can be necessary to solve conflicts in gradle_dependencies
-# please enclose in double quotes 
-# e.g. android.add_packaging_options = "exclude 'META-INF/common.kotlin_module'", "exclude 'META-INF/*.kotlin_module'"
-#android.add_packaging_options =
-
 # (list) Java classes to add as activities to the manifest.
 #android.add_activities = com.example.ExampleActivity
 

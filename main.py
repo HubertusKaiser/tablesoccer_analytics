@@ -306,22 +306,48 @@ class MainMenu(Screen):
 
 class KickerApp(App):
     def build(self):
-        # Initialize database
-        init_db()
-        
-        # Create screen manager
-        sm = ScreenManager()
-        
-        # Add screens
-        sm.add_widget(MainMenu(name='menu'))
-        sm.add_widget(EntryScreen(name='entry'))
-        sm.add_widget(HistoryScreen(name='history'))
-        sm.add_widget(SettingsScreen(name='settings'))
-        
-        return sm
+        try:
+            Logger.info("Building application UI...")
+            # Initialize database
+            init_db()
+            
+            # Create screen manager
+            sm = ScreenManager()
+            
+            # Add screens
+            sm.add_widget(MainMenu(name='menu'))
+            sm.add_widget(EntryScreen(name='entry'))
+            sm.add_widget(HistoryScreen(name='history'))
+            sm.add_widget(SettingsScreen(name='settings'))
+            
+            return sm
+        except Exception as e:
+            Logger.error(f"Error in KickerApp.build: {str(e)}")
+            import traceback
+            Logger.error(traceback.format_exc())
+            from kivy.uix.label import Label
+            return Label(text=f"Error: {str(e)}\n\nPlease check the logs.", font_size='20sp')
+
+import logging
+from kivy.logger import Logger
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+Logger.setLevel(logging.DEBUG)
+
+def log_unhandled_exception(exc_type, exc_value, exc_traceback):
+    """Log unhandled exceptions"""
+    import traceback
+    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    logging.error("Unhandled exception: %s", error_msg)
+    Logger.error(f"Unhandled exception: {error_msg}")
+
+import sys
+sys.excepthook = log_unhandled_exception
 
 if __name__ == '__main__':
     try:
+        Logger.info("Starting application...")
         # Initialize database
         from db import init_db
         init_db()
