@@ -1,8 +1,6 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.metrics import dp
@@ -11,18 +9,11 @@ from kivy.clock import Clock
 from datetime import datetime
 from db import get_player_frequencies, insert_match
 from config import text_parameter
+from ui_components import (PlayerButton, TeamButton, NumpadButton, 
+                          SaveButton, AddPlayerButton, ScoreLabel, 
+                          TeamLabel, COLORS, DIMENSIONS)
 
-class PlayerButton(Button):
-    """Custom button for player selection"""
-    def __init__(self, name, **kwargs):
-        super().__init__(**kwargs)
-        self.name = name
-        self.text = name
-        self.background_normal = ''
-        self.background_color = (0.9, 0.9, 0.9, 1)  # Default color
-        self.bind(on_press=self.on_button_press)
-    
-    def on_button_press(self, instance):
+def on_button_press(self, instance):
         self.parent.parent.parent.toggle_player(self.name)
 
 class Numpad(GridLayout):
@@ -39,18 +30,10 @@ class Numpad(GridLayout):
     
     def build_ui(self):
         # Team indicator and switch
-        self.team_label = Label(
-            text="Aktiv: Team A",
-            font_size='16sp',
-            size_hint_y=0.2
-        )
+        self.team_label = TeamLabel(text="Aktiv: Team A")
         self.add_widget(self.team_label)
         
-        switch_btn = Button(
-            text="⇆ Team wechseln",
-            size_hint_y=0.2,
-            on_press=self.toggle_team
-        )
+        switch_btn = TeamButton(on_press=self.toggle_team)
         self.add_widget(switch_btn)
         
         # Numpad buttons
@@ -62,10 +45,7 @@ class Numpad(GridLayout):
         ]
         
         for btn in buttons:
-            button = Button(
-                text=btn,
-                on_press=self.on_button_press
-            )
+            button = NumpadButton(text=btn, on_press=self.on_button_press)
             self.add_widget(button)
     
     def toggle_team(self, instance):
@@ -101,30 +81,27 @@ class KickerApp(App):
         self.build_player_buttons()
         
         # Add player button
-        add_player_btn = Button(
-            text="Neuen Spieler hinzufügen",
-            size_hint_y=0.1,
-            on_press=self.show_add_player_popup
-        )
+        add_player_btn = AddPlayerButton(on_press=self.show_add_player_popup)
         
         # Score display
-        score_layout = BoxLayout(orientation='horizontal', size_hint_y=0.1)
-        score_layout.add_widget(Label(text="Tore Team A:", size_hint_x=0.3))
-        self.score_a = Label(text=self.tore_team_a, font_size='24sp', size_hint_x=0.2)
+        score_layout = BoxLayout(
+            orientation='horizontal', 
+            size_hint_y=0.1,
+            padding=DIMENSIONS['padding'],
+            spacing=DIMENSIONS['spacing']
+        )
+        score_layout.add_widget(TeamLabel(text="Tore Team A:"))
+        self.score_a = ScoreLabel(text=self.tore_team_a)
         score_layout.add_widget(self.score_a)
-        score_layout.add_widget(Label(text="Tore Team B:", size_hint_x=0.3))
-        self.score_b = Label(text=self.tore_team_b, font_size='24sp', size_hint_x=0.2)
+        score_layout.add_widget(TeamLabel(text="Tore Team B:"))
+        self.score_b = ScoreLabel(text=self.tore_team_b)
         score_layout.add_widget(self.score_b)
         
         # Numpad
         self.numpad = Numpad(size_hint_y=0.5)
         
         # Save button
-        save_btn = Button(
-            text="Spiel speichern",
-            size_hint_y=0.1,
-            on_press=self.save_match
-        )
+        save_btn = SaveButton(on_press=self.save_match)
         
         # Add all widgets to root
         self.root.add_widget(self.player_grid)
@@ -140,7 +117,7 @@ class KickerApp(App):
         self.player_buttons = {}
         
         for name in self.players:
-            btn = PlayerButton(name)
+            btn = PlayerButton(name, on_press=self.toggle_player)
             self.player_buttons[name] = btn
             self.player_grid.add_widget(btn)
     
@@ -159,17 +136,17 @@ class KickerApp(App):
         for name, btn in self.player_buttons.items():
             if name in self.selected_players:
                 idx = self.selected_players.index(name)
-                btn.background_color = (0.56, 0.93, 0.56, 1) if idx < 2 else (0.68, 0.85, 0.9, 1)  # lightgreen/lightblue
+                btn.background_color = COLORS['team_a'] if idx < 2 else COLORS['team_b']
             else:
-                btn.background_color = (0.9, 0.9, 0.9, 1)  # Default color
+                btn.background_color = COLORS['default']
     
     def show_add_player_popup(self, instance):
         content = BoxLayout(orientation='vertical', padding=dp(10))
         name_input = TextInput(hint_text='Name des neuen Spielers', multiline=False)
         
         btn_layout = BoxLayout(spacing=dp(5))
-        btn_ok = Button(text='OK')
-        btn_cancel = Button(text='Abbrechen')
+        btn_ok = StyledButton(text='OK', size_hint_y=0.4)
+        btn_cancel = StyledButton(text='Abbrechen', size_hint_y=0.4)
         
         popup = Popup(
             title='Neuer Spieler',

@@ -3,8 +3,21 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
 from kivy.uix.label import Label
+from ui_components import (
+    Button,  # Using our custom Button from ui_components
+    DeletePlayerGamesButton,
+    RenamePlayerButton,
+    BackButton,
+    DeleteConfirmButton,
+    CancelButton,
+    EntryButton,
+    HistoryButton,
+    SettingsButton,
+    RenameButton,
+    COLORS,
+    DIMENSIONS
+)
 from kivy.uix.popup import Popup
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ListProperty
@@ -32,26 +45,17 @@ class SettingsScreen(Screen):
         buttons_layout = BoxLayout(orientation='vertical', spacing=dp(10))
         
         # Delete player games button
-        btn_delete_player_games = Button(
-            text='Alle Spiele eines Spielers löschen',
-            size_hint_y=0.4,
-            font_size='20sp',
+        btn_delete_player_games = DeletePlayerGamesButton(
             on_press=self.confirm_delete_player_games
         )
         
         # Rename player button
-        btn_rename_player = Button(
-            text='Spieler umbenennen',
-            size_hint_y=0.4,
-            font_size='20sp',
+        btn_rename_player = RenamePlayerButton(
             on_press=self.show_rename_player_popup
         )
         
         # Back button
-        btn_back = Button(
-            text='← Zurück',
-            size_hint_y=0.1,
-            font_size='20sp',
+        btn_back = BackButton(
             on_press=self.go_back
         )
         
@@ -84,13 +88,10 @@ class SettingsScreen(Screen):
             except Exception as e:
                 self.show_message("Fehler", f"Fehler beim Löschen: {str(e)}")
         
-        btn_yes = Button(
-            text='Ja, löschen',
-            background_color=(0.8, 0.2, 0.2, 1),
+        btn_yes = DeleteConfirmButton(
             on_press=delete_games
         )
-        btn_no = Button(
-            text='Abbrechen',
+        btn_no = CancelButton(
             on_press=lambda x: popup.dismiss()
         )
         
@@ -198,14 +199,8 @@ class SettingsScreen(Screen):
         
         # Buttons
         btn_layout = BoxLayout(spacing=dp(5))
-        btn_rename = Button(
-            text='Umbenennen',
-            font_size='20sp'
-        )
-        btn_cancel = Button(
-            text='Abbrechen',
-            font_size='20sp'
-        )
+        btn_rename = RenameButton()
+        btn_cancel = CancelButton()
         
         popup = Popup(
             title='Spieler umbenennen',
@@ -267,24 +262,15 @@ class MainMenu(Screen):
             size_hint_y=0.2
         )
         
-        btn_entry = Button(
-            text='Ergebnisse eintragen',
-            size_hint_y=0.4,
-            font_size='24sp',
+        btn_entry = EntryButton(
             on_press=self.switch_to_entry
         )
         
-        btn_history = Button(
-            text='Letzte Spiele',
-            size_hint_y=0.4,
-            font_size='24sp',
+        btn_history = HistoryButton(
             on_press=self.switch_to_history
         )
         
-        btn_settings = Button(
-            text='Einstellungen und Setup',
-            size_hint_y=0.4,
-            font_size='24sp',
+        btn_settings = SettingsButton(
             on_press=self.switch_to_settings
         )
         
