@@ -25,6 +25,7 @@ from kivy.clock import Clock
 from datetime import datetime
 from db import init_db, fetch_last_matches, delete_last_match, get_last_match
 from config import text_parameter
+from kivy.utils import platform
 
 class SettingsScreen(Screen):
     def __init__(self, **kwargs):
