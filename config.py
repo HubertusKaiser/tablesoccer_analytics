@@ -7,17 +7,18 @@ def get_db_path():
     """Get the appropriate database path for the current platform."""
     try:
         if platform == 'android':
-            from android.storage import app_storage_path
+            from android.storage import primary_external_storage_path
             from android.permissions import request_permissions, Permission
-            
-            # Request storage permissions
+
+            # Request storage permissions (for public Documents access)
             request_permissions([
                 Permission.WRITE_EXTERNAL_STORAGE,
                 Permission.READ_EXTERNAL_STORAGE
             ])
-            
-            # Use app's private storage
-            data_dir = os.path.join(app_storage_path(), 'databases')
+
+            # Store DB in a public, easy to access path: Documents/KickerApp
+            docs_dir = os.path.join(primary_external_storage_path(), 'Documents')
+            data_dir = os.path.join(docs_dir, 'KickerApp')
         else:
             # For desktop platforms
             data_dir = os.path.join(os.path.expanduser('~'), '.kicker_app')

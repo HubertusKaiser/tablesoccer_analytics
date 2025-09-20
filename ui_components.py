@@ -13,6 +13,8 @@ class StyledButton(Button):
         self.size_hint_y = None
         self.height = dp(50)
         self.padding = [dp(10), dp(5)]
+        # Ensure dark text on light backgrounds
+        self.color = (0, 0, 0, 1)
 
 class PlayerButton(StyledButton):
     """Custom button for player selection"""
@@ -56,14 +58,18 @@ class DeletePlayerGamesButton(SettingsButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.text = 'Alle Spiele eines Spielers löschen'
-        self.on_press = kwargs.get('on_press')
+        handler = kwargs.get('on_press')
+        if handler:
+            self.bind(on_press=handler)
 
 class RenamePlayerButton(SettingsButton):
     """Button for renaming a player"""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.text = 'Spieler umbenennen'
-        self.on_press = kwargs.get('on_press')
+        handler = kwargs.get('on_press')
+        if handler:
+            self.bind(on_press=handler)
 
 class BackButton(StyledButton):
     """Back button for navigation"""
@@ -72,7 +78,9 @@ class BackButton(StyledButton):
         self.text = '← Zurück'
         self.size_hint_y = 0.1
         self.font_size = '20sp'
-        self.on_press = kwargs.get('on_press')
+        handler = kwargs.get('on_press')
+        if handler:
+            self.bind(on_press=handler)
 
 class DialogButton(StyledButton):
     """Base button for dialog boxes"""
@@ -86,14 +94,18 @@ class ConfirmButton(DialogButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.background_color = COLORS['delete']
-        self.on_press = kwargs.get('on_press')
+        handler = kwargs.get('on_press')
+        if handler:
+            self.bind(on_press=handler)
 
 class CancelButton(DialogButton):
     """Cancel button for dialogs"""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.text = 'Abbrechen'
-        self.on_press = kwargs.get('on_press')
+        handler = kwargs.get('on_press')
+        if handler:
+            self.bind(on_press=handler)
 
 class DeleteConfirmButton(ConfirmButton):
     """Delete confirmation button"""

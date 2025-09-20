@@ -4,16 +4,16 @@
 title = Kicker App
 
 # (str) Package name
-package.name = myapp
+package.name = kickerapp
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = com.hubertus.kicker
 
 # (str) Source code where the main.py live
 source.dir = .
 
-# (str) The main file to run when the app starts
-source.include_patterns = simple_test.py
+# (str) The main file to run when the app starts (main.py is default)
+# source.include_patterns = main.py
 
 # (str) The main entry point
 android.entrypoint = org.kivy.android.PythonActivity
@@ -42,17 +42,17 @@ version = 1.0.1
 # version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
-requirements = python3==3.9.16,kivy==2.2.1,kivymd==1.1.1,plyer,sqlite3,android,pillow,pyjnius
+requirements = python3,kivy==2.3.1,plyer,sqlite3,android,pillow,pyjnius
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/presplash.png
+# presplash.filename = %(source.dir)s/assets/presplash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/assets/icon.png
+# icon.filename = %(source.dir)s/assets/icon.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
@@ -106,16 +106,16 @@ android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, W
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-android.api = 30
+android.api = 35
 
 # (int) Minimum API your APK / AAB will support.
-android.minapi = 21
+android.minapi = 23
 
 # (int) Android SDK version to use
 #android.sdk = 20
 
-# (str) Android NDK version to use
-android.ndk =  25b
+# (str) Android NDK version to use (auto-managed if empty)
+# android.ndk = 25b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 #android.ndk_api = 21
@@ -123,11 +123,11 @@ android.ndk =  25b
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
 
-# (str) Android NDK directory (if empty, it will be automatically downloaded.)
-android.ndk_path = /home/hubertus/.buildozer/android/platform/android-ndk-r25b
+# (str) Android NDK directory (leave empty to auto-download)
+# android.ndk_path =
 
-# (str) Android SDK directory (if empty, it will be automatically downloaded.)
-android.sdk_path = /home/hubertus/.buildozer/android/platform/android-sdk
+# (str) Android SDK directory (leave empty to auto-download)
+# android.sdk_path =
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 #android.ant_path =
@@ -259,10 +259,8 @@ android.logcat_filters = *:S python:D
 # (bool) Copy library instead of making a libpymodules.so
 #android.copy_libs = 1
 
-# (list) The Android archs to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
-# In past, was `android.arch` as we weren't supporting builds for multiple archs at the same time.
-# (list) The Android archs to build for
-android.archs = arm64-v8a, armeabi-v7a
+# (list) The Android archs to build for (modern tablets are arm64-v8a)
+android.archs = arm64-v8a
 
 # (str) The format used to package the app for release mode (aab or apk or aar).
 android.release_artifact = apk
@@ -393,10 +391,10 @@ log_level = 2
 warn_on_root = 1
 
 # (str) Path to build artifact storage, absolute or relative to spec file
-# build_dir = ./.buildozer
+build_dir = ./.buildozer
 
 # (str) Path to build output (i.e. .apk, .aab, .ipa) storage
-# bin_dir = ./bin
+bin_dir = ./bin
 
 #    -----------------------------------------------------------------------------
 #    List as sections

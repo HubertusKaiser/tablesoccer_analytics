@@ -25,6 +25,7 @@ from kivy.clock import Clock
 from datetime import datetime
 from db import init_db, fetch_last_matches, delete_last_match, get_last_match
 from config import text_parameter
+from kivy.utils import platform
 
 class SettingsScreen(Screen):
     def __init__(self, **kwargs):
@@ -259,7 +260,8 @@ class MainMenu(Screen):
         title = Label(
             text=text_parameter.titel,
             font_size='36sp',
-            size_hint_y=0.2
+            size_hint_y=0.2,
+            color=(0, 0, 0, 1)
         )
         
         btn_entry = EntryButton(
